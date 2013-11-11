@@ -99,6 +99,8 @@ int main (int argc, const char * argv[])
 		/************************************************************************************************/
 		
 		GLRungeKuttaOperation *integrator = [GLAdaptiveRungeKuttaOperation rungeKutta23AdvanceY: @[[gaussian differentiateWithOperator: laplacianMinusOne]] stepSize: timeStep fFromTY:^(GLScalar *time, NSArray *yNew) {
+//		GLRungeKuttaOperation *integrator = [GLRungeKuttaOperation rungeKutta4AdvanceY: @[[gaussian differentiateWithOperator: laplacianMinusOne]] stepSize: timeStep fFromTY:^(GLScalar *time, NSArray *yNew) {
+
 			
 			// First, invert psi to get eta where (\nabla^2 -1) eta = psi. We use our cached differential operator.
 			GLVariable *eta = [inverseLaplacianMinusOne transform: yNew[0]];
