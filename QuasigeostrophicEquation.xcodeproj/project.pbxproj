@@ -27,6 +27,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		81356022183151BA00A44A1F /* ShowInMatlab.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShowInMatlab.m; sourceTree = SOURCE_ROOT; };
 		81CCB097180461760064471F /* QuasigeostrophicEquation */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = QuasigeostrophicEquation; sourceTree = BUILT_PRODUCTS_DIR; };
 		81CCB09A180461760064471F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		81CCB09D180461760064471F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -78,6 +79,7 @@
 			isa = PBXGroup;
 			children = (
 				81CCB09D180461760064471F /* main.m */,
+				81356022183151BA00A44A1F /* ShowInMatlab.m */,
 				81CCB0A1180461760064471F /* QuasigeostrophicEquation.1 */,
 				81CCB09F180461760064471F /* Supporting Files */,
 			);

@@ -1,4 +1,4 @@
-file = '/Users/jearly/Desktop/LinearQuasigeostrophy.nc';
+file = '/Users/jearly/Desktop/Quasigeostrophy.nc';
 x = ncread(file, 'x');
 y = ncread(file, 'y');
 t = ncread(file, 'time');
