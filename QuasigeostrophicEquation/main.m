@@ -55,10 +55,9 @@ int main (int argc, const char * argv[])
 		GLLinearTransform *diffJacobianY = [diff_xxy plus: diff_yyy];
 		
 		GLFloat k = 0.5*xDim.sampleInterval;
+		GLLinearTransform *biharmonic = [GLLinearTransform harmonicOperatorOfOrder: 2 fromDimensions: spectralDimensions forEquation: equation];
 		GLLinearTransform *svv = [GLLinearTransform spectralVanishingViscosityFilterWithDimensions: spectralDimensions scaledForAntialiasing: YES forEquation: equation];
-		//		[diffOperators setDifferentialOperator: [[[diffOperators harmonicOperatorOfOrder: 2] scalarMultiply: k] minus: [diffOperators x]] forName: @"diffLin"];
-		//		[diffOperators setDifferentialOperator: [[[[diffOperators harmonicOperatorOfOrder: 2] scalarMultiply: k] multiply: svv] minus: [diffOperators x]] forName: @"diffLin"];
-		GLLinearTransform *diffLin = [[laplacian times: @(k)] times: svv];
+		GLLinearTransform *diffLin = [[biharmonic times: @(k)] times: svv];
 		
 		
 		/************************************************************************************************/
@@ -105,8 +104,6 @@ int main (int argc, const char * argv[])
 			GLVariable *eta = [inverseLaplacianMinusOne transform: yNew[0]];
 			
 			// Second, compute f. For QG, f = (eta_{xxx} + eta_{xyy})*eta_y - (eta_{xxy}+eta_{yyy})*eta_x - eta_x + k*(eta_{xx}+eta_{yy})
-			// Notice again that we're using the cached differential operators from above to do this.
-			//GLVariable *f = [[eta diff:@"diffLin"] plus: [[[[eta y] times: [eta diff: @"diffJacobianX"]] minus: [[eta x] times: [eta diff: @"diffJacobianY"]]] frequencyDomain]];
 			GLVariable *f = [[eta differentiateWithOperator: diffLin] plus: [[[[eta y] times: [eta differentiateWithOperator: diffJacobianX]] minus: [[eta x] times: [[[eta differentiateWithOperator: diffJacobianY] spatialDomain] plus: @(1.0)]]] frequencyDomain]];
 			return @[f];
 		}];
@@ -115,16 +112,16 @@ int main (int argc, const char * argv[])
 		/*		Now iterate! Stop every day to write out some data.										*/
 		/************************************************************************************************/
 		
-		for (GLFloat time = 1/T_QG; time < 800/T_QG; time += 1/T_QG)
+		for (GLFloat time = 1/T_QG; time < 365/T_QG; time += 1/T_QG)
 		{
             @autoreleasepool {
 				y = [integrator stepForwardToTime: time][0];
 				if (!y)	break;
 				
-				NSLog(@"Logging day: %f, last step size: %f, next step size: %f.", (integrator.currentTime*T_QG), integrator.lastStepSize*T_QG, integrator.stepSize*T_QG);
+				NSLog(@"Logging day: %f, last step size: %f, next step size: %f.", (time*T_QG), integrator.lastStepSize*T_QG, integrator.stepSize*T_QG);
 				
 				// We're using spectral code, so it's possible (and is in fact the case) that the variable is not in the spatial domain.
-				[tDim addPoint: @(integrator.currentTime)];
+				[tDim addPoint: @(time)];
 				GLVariable *eta = [[inverseLaplacianMinusOne transform: y] spatialDomain];
 				[sshHistory concatenateWithLowerDimensionalVariable: eta alongDimensionAtIndex:0 toIndex: (tDim.nPoints-1)];
             }
