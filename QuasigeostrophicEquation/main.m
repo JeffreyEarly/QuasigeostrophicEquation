@@ -33,8 +33,8 @@ int main (int argc, const char * argv[])
 		GLEquation *equation = [[GLEquation alloc] init];
 		
 		NSArray *spatialDimensions = @[xDim, yDim];
-		GLVariable *x = [GLVariable variableOfRealTypeFromDimension: xDim withDimensions: spatialDimensions forEquation: equation];
-		GLVariable *y = [GLVariable variableOfRealTypeFromDimension: yDim withDimensions: spatialDimensions forEquation: equation];
+		GLFunction *x = [GLFunction functionOfRealTypeFromDimension: xDim withDimensions: spatialDimensions forEquation: equation];
+		GLFunction *y = [GLFunction functionOfRealTypeFromDimension: yDim withDimensions: spatialDimensions forEquation: equation];
 		
 		/************************************************************************************************/
 		/*		Create and cache the differential operators we will need								*/
@@ -68,8 +68,8 @@ int main (int argc, const char * argv[])
 		GLFloat amplitude = 15.0/N_QG;
 		GLFloat length = 80/L_QG;
 		
-		GLVariable *r2 = [[x times: x] plus: [y times: y]];
-		GLVariable *gaussian = [[[r2 times: @(-1.0/(length*length))] exponentiate] times: @(amplitude)];
+		GLFunction *r2 = [[x times: x] plus: [y times: y]];
+		GLFunction *gaussian = [[[r2 times: @(-1.0/(length*length))] exponentiate] times: @(amplitude)];
 		
 		/************************************************************************************************/
 		/*		Create a file to output data															*/
@@ -85,9 +85,9 @@ int main (int argc, const char * argv[])
 		/*		Estimate the time step size																*/
 		/************************************************************************************************/
 		
-		GLVariable *v = [[gaussian x] spatialDomain];
-		GLVariable *u = [[gaussian y] spatialDomain];
-		GLVariable *speed = [[u times: u] plus: [v times: v]];
+		GLFunction *v = [[gaussian x] spatialDomain];
+		GLFunction *u = [[gaussian y] spatialDomain];
+		GLFunction *speed = [[u times: u] plus: [v times: v]];
 		[equation solveForVariable: speed];
 		
 		CGFloat cfl = 0.5;
@@ -103,10 +103,10 @@ int main (int argc, const char * argv[])
 
 			
 			// First, invert psi to get eta where (\nabla^2 -1) eta = psi. We use our cached differential operator.
-			GLVariable *eta = [inverseLaplacianMinusOne transform: yNew[0]];
+			GLFunction *eta = [inverseLaplacianMinusOne transform: yNew[0]];
 			
 			// Second, compute f. For QG, f = (eta_{xxx} + eta_{xyy})*eta_y - (eta_{xxy}+eta_{yyy})*eta_x - eta_x + k*(eta_{xx}+eta_{yy})
-			GLVariable *f = [[eta differentiateWithOperator: diffLin] plus: [[[[eta y] times: [eta differentiateWithOperator: diffJacobianX]] minus: [[eta x] times: [[[eta differentiateWithOperator: diffJacobianY] spatialDomain] plus: @(1.0)]]] frequencyDomain]];
+			GLFunction *f = [[eta differentiateWithOperator: diffLin] plus: [[[[eta y] times: [eta differentiateWithOperator: diffJacobianX]] minus: [[eta x] times: [[[eta differentiateWithOperator: diffJacobianY] spatialDomain] plus: @(1.0)]]] frequencyDomain]];
 			return @[f];
 		}];
 		
@@ -124,7 +124,7 @@ int main (int argc, const char * argv[])
 				
 				// We're using spectral code, so it's possible (and is in fact the case) that the variable is not in the spatial domain.
 				[tDim addPoint: @(time)];
-				GLVariable *eta = [[inverseLaplacianMinusOne transform: y] spatialDomain];
+				GLFunction *eta = [[inverseLaplacianMinusOne transform: y] spatialDomain];
 				[sshHistory concatenateWithLowerDimensionalVariable: eta alongDimensionAtIndex:0 toIndex: (tDim.nPoints-1)];
             }
 		}
